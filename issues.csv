@@ -1,0 +1,5 @@
+summary;description;comments;label
+Difficulty mocking external dependencies in unit tests;The current code structure makes it challenging to mock external dependencies for unit testing, leading to slow and unreliable tests;[User A] This is a major bottleneck for our development process.;Yes
+Potential security vulnerability in authentication mechanism;The authentication flow seems to rely on storing passwords in plain text;This could be a major security risk if the database is compromised.;Yes;
+Class hierarchy becoming complex and difficult to maintain;The number of child classes inheriting from a base class is growing significantly, making the codebase harder to understand and modify.;[User B] We should consider refactoring to improve maintainability.;Yes;
+Unclear naming conventions for variables and functions;Inconsistent naming conventions throughout the codebase make it difficult to understand the purpose of variables and functions.;Enforcing consistent naming conventions would improve code readability.;No;
