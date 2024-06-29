@@ -40,7 +40,7 @@ def principal():
     prompt = input('Qual é a pergunta? ')
     try: 
         chat_configurado, modelo_configurado = configura_modelo()
-        while True: 
+        while len(prompt) > 0: 
             print('Aguarde...')
             resposta = pergunte_ao_gemini(chat_configurado, prompt)  
             qtd_tokens_enviados.append(modelo_configurado.count_tokens(prompt))  
