@@ -7,6 +7,10 @@
 
 import google.generativeai as genai
 import os
+import sys
+
+qtd_tokens_enviados = []
+qtd_tokens_recebidos = []
 
 def configura_modelo(modelo='gemini-1.0-pro-latest'): 
     try:
@@ -14,30 +18,35 @@ def configura_modelo(modelo='gemini-1.0-pro-latest'):
         genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
         # Defina o modelo de LLM
         model = genai.GenerativeModel(modelo)
-        return model
+        chat = model.start_chat(history=[])
+        return chat, model
     except Exception as ex:
         print(f"Erro: {str(ex)}")
         return False
 
-def pergunte_ao_gemini(prompt):
-    try:
-        modelo_configurado = configura_modelo()
-        if modelo_configurado:
-            response = modelo_configurado.generate_content(prompt, stream=True)
+def pergunte_ao_gemini(chat_configurado, prompt):
+    try:        
+        if chat_configurado:
+            response = chat_configurado.send_message(prompt, stream=True)
             for pedaco in response: 
                 print(pedaco.text)
         else:
             raise ValueError('O modelo não foi configurado corretamente')
     except Exception as ex:
         print(f"Erro: {str(ex)}")
+        sys.exit(0)
 
-def principal():
+def principal():    
     prompt = input('Qual é a pergunta? ')
     try: 
+        chat_configurado, modelo_configurado = configura_modelo()
         while True: 
             print('Aguarde...')
-            resposta = pergunte_ao_gemini(prompt)    
+            resposta = pergunte_ao_gemini(chat_configurado, prompt)  
+            qtd_tokens_enviados.append(modelo_configurado.count_tokens(prompt))  
             print(resposta)
+            qtd_tokens_recebidos.append(modelo_configurado.count_tokens(chat_configurado.history))
+
             prompt = input('Qual é a pergunta? ')
             if (not prompt) or (prompt.lower() == 'sair'):
                 break
@@ -47,3 +56,5 @@ def principal():
 instrucoes = 'Digite sair para encerrar o programa'
 print(instrucoes)
 principal()
+print(f"qtd_tokens_enviados: {qtd_tokens_enviados}")
+print(f"qtd_tokens_recebidos: {qtd_tokens_recebidos}")
