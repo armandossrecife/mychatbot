@@ -2,6 +2,8 @@
 
 Criação de um modelo automático (baseado no [Google Gemini](https://gemini.google.com)) para fazer inspeção de issues de projetos da [Apache foundation](https://www.apache.org/) para classificar se o issue tem algum tipo de impacto arquitetural ou não.
 
+Trabalho principal: [ATDCodeAnalyzer Evaluation in Open-source projects](https://github.com/Technical-Debt-Large-Scale/my_validation/tree/main)
+
 [Requisitos básicos da implementação](https://github.com/armandossrecife/mychatbot/blob/main/inspection.md)
 
 [Instruções detalhadas dos prompts](https://github.com/armandossrecife/mychatbot/blob/main/instructions.txt)
