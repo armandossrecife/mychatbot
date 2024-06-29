@@ -18,7 +18,7 @@ def configura_modelo(modelo='gemini-1.0-pro-latest', max_token=4096, my_temperat
         # Configure o acesso ao Google Gemini
         genai.configure(api_key=os.environ["GOOGLE_API_KEY"])        
         # Generation Config
-        my_generation_config = GenerationConfig(max_output_tokens=max_token, temperature=my_temperature, top_p=1, top_k=32)
+        my_generation_config = GenerationConfig(max_output_tokens=max_token, temperature=my_temperature, top_p=1, top_k=1)
         # Defina o modelo de LLM
         model = genai.GenerativeModel(modelo, generation_config=my_generation_config)
     except Exception as ex:
