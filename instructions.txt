@@ -1,0 +1,683 @@
+s1p1
+# Stage 1 #
+## Introduction ##
+### Contextualization ### 
+Lets talk about the following topics: Software Architecture, Architectural Issues, Technical Debt (TD), Architectural Technical Debt (ATD) and Self-admitted Technical Debt (SATD).
+
+s1p2
+# Stage 1 #
+## Introduction ##
+### Contextualization ### 
+Another important topic that could be usefull and related to architectural issue, ATD, TD and SATD is save Tasks or Issues in Issue Tracker System, because it can keep a history of all tasks about improvement, bug-fix, and new features implemented in the software system. Generally, an issue has important data like issue_id, summary, description and comments that contains a lot of important information about improvement task, bug-fix task or new feature task to help developers to work in the issues.
+
+s1p3
+# Stage 1 #
+## Introduction ##
+### Keywords Samples ### 
+keywords found in the content of message commits, modified files diff in commits, and issue content from the issue tracker. These kinds of SATD keywords show technical debt in the item that the developer registers the keyword. Here are some of examples of SATD keywords:
+API
+FIXME
+TODO
+ability to evolve
+ability to handle increased load
+annotation
+anti-pattern
+any chance of a test
+architectural debt
+architectural issue
+architectural problem
+architectural smell
+avoid calling it twice
+avoid extra seek
+bad practice
+brittle code
+buggy code
+by hard coding instead of
+cast
+checkstyle errors
+circular dependency
+clean
+clean up code
+cleanup
+code cleanup
+code complexity
+code debt
+code defect
+code dependencies
+code difficulty
+code duplication
+code entanglement
+code flaw
+code improvement
+code interdependencies
+code issue
+code problem
+code redundancy
+code restructuring
+code rot
+code simplification
+code smell
+cognitive complexity
+comment
+complex code
+complex code relationships
+complexity
+concrete code
+concurrency issue
+confusing
+constructor
+cross-module
+cyclic dependency
+cyclomatic complexity
+dead code
+debug
+delicate code
+dependability
+dependencies
+dependency
+deprecated code
+design
+design debt
+design defect
+design flaw
+design flaws
+design issue
+design problem
+design smell
+difficult to maintain code
+difficult to understand code
+disorganized code
+documentation
+documentation debt
+documentation does not mention
+documentation doesn't match
+duplication
+ease of maintenance
+easy to break code
+encapsulation
+endpoints
+error message
+exception
+exposed internal state
+extension point
+fault tolerance
+files
+findbugs
+fix
+flaky
+flaky code
+formatting
+fragile code
+get rid of
+good to have coverage
+hack
+handling
+hard-coded strings
+hard-coded values
+header
+implementation
+implementation debt
+improvement
+inconsistency
+indirect dependency
+ineffective solution
+ineffective way
+inefficient solution
+inefficient way
+infinite loop
+inter-module
+interface
+it'd be nice
+it's not perfectly documented
+javadoc
+lack of abstraction
+lack of code comments
+lack of cohesion
+lack of documentation
+lack of encapsulation
+lack of generalization
+lack of information hiding
+lack of modularity
+lack of separation of concerns
+lack of test cases
+lack of testing
+latency
+lead to huge memory allocation
+leak
+less verbose
+literal strings
+literal values
+logging
+magic numbers
+magic strings
+maintainability
+maintainability issue
+make it less brittle
+makes it much easier
+makes it very hard
+minor
+misleading
+modularity
+module dependencies
+module-to-module
+monolithic code
+more efficient
+more readable
+more robust
+more tests
+more tightly coupled than ideal
+multithreading issue
+naming
+need to update documentation
+no longer needed
+not done yet
+not implemented
+not supported yet
+not thread safe
+not used
+output
+patch doesn't apply cleanly
+performance
+please add a test
+poor solution
+poor way
+poorly documented code
+poorly structured code
+poorly tested code
+quick fix
+race condition
+reduce duplicate code
+redundant
+refact
+refactor
+refactoring
+reliability
+rename
+repeated code
+response time
+robustness
+scalability
+scalability issue
+short term solution
+should be updated to reflect
+should improve a bit by
+simplify
+solution won't be really satisfactory
+some holes in the doc
+spaghetti code
+speed
+speed up
+spurious error messages
+suboptimal solution
+suboptimal way
+support for
+synchronization issue
+system dependencies
+system design problem
+takes a long time
+technical debt
+technical debt due to architectural issues
+technical debt due to design issues
+technical kludge
+temporary solution
+test
+test doesn't add much value
+testing debt
+there is no unit test
+throughput
+tidy up
+tight coupling
+too long
+too much
+trustworthiness
+typo
+ugly
+undocumented code
+undocumented strings
+undocumented values
+unnecessary
+unreliable code
+unstable
+untested code
+unused
+unused code
+unused import
+update
+violation
+wastes a lot of space
+work in progress
+workaround
+would significantly improve
+wrong solution
+wrong way
+
+s1p4
+# Stage 1 #
+## Issues samples ##
+### Issues types ###
+Here, we can see an example of issue from Jira Apache Cassandra, that contains issue_type, summary, description and comments:
+
+issue_type: Improvement
+
+summary: Added support for type VECTOR<type, dimension> 
+
+description: Based off several mailing list threads (see "[POLL] Vector type for ML”, "[DISCUSS] New data type for vector search”, and "Adding vector search to SAI with heirarchical navigable small world graph index”), its desirable to add a new type “VECTOR” that has the following properties
+
+1) fixed length array
+2) elements may not be null
+3) flatten array (aka multi-cell = false) 
+
+status: Resolved
+
+comments: having a hard time fixing CQL3TypeLiteralTest as this test never tested what CQL supports, but tests against a model generated by a human... when you fix bugs in toCQLLiteral so it actually works in CQL, this test breaks... and is breaking in annoying ways... one way is that UDT does not allow NULL for a counter type, but this test makes sure we convert it to "name: null"... there have been a lot more... so will take time to fix this test... its also kinda the same as the new AbstractTypeTest.serde as it tests the same behavior, but uses CQL parsing to validate
+A note on the serialization format: right now we're serializing vectors as just a sequence of the underlying subtypes.  So if we have a vector of floats of dimension 3 we just write three serialized floats one after another on the wire; there's no size information included for either the number of elements in the list or the size of any one element.  This differs from how other collections (such as lists and maps) and UDTs are handled.  In those cases we send along (a) the element size of a given collection and (b) the size of each element (included in the bytes structure).
+
+Such a change isn't unreasonable, at least not for fixed size types (and perhaps the variable types as well) since hypothetically the codecs should be aware of how big a given type might be.  But that's not what, say, the Java driver does at the moment.  Let's take the example of a float type; when decoding a ByteBuffer expected to contain an instance of this type we expect that ByteBuffer to contain precisely four bytes.  The assumption is that something upstream has pulled off exactly the expected number of bytes from some larger ByteBuffer.
+
+I certainly can take steps to expose the expected number of bytes for a given codec.  But it did seem worthwhile to highlight the difference and make sure that this difference in serialization formats represents an explicit choice.
+bq. But it did seem worthwhile to highlight the difference and make sure that this difference in serialization formats represents an explicit choice.
+
+Yes, this was something I explicitly did.  My argument was that the common case are vectors of numbers, so by optimizing for this case we save a lot of space for these vectors (vector<byte, 1024> is 1,024 bytes with this format, but would have been 5,120 if we included size).  This gets even worse if you move from a vector to a matrix (vector<vector<byte, 1024>, 1024> would be 1,048,576 bytes without the header and 20,971,520 with the header); notice that in this case vector is fixed length if-and-only-if the element type is fixed length!
+
+One added change I have been thinking about is "fixing" ShortType to be fixed length in this code path without changing existing code paths... right now ShortType is serialized as int header + 2 byte short in vector type, but also in normal SSTable format!  Its actually cheaper for users to store a short as an int as that is stored as 4 bytes only... Given this is a new type, I could add and use a new method "valueLengthIfFixedNoForRealThisTime" and only fix ShortType to return 2 where as valueLengthIfFixed currently returns -1 (aka not fixed length)...
+just pushed a patch that breaks AbstractTypeTest as I added support for CompositeType and found a fun bug where using this may corrupt the DB's in-memory state (if set<'CompositeType(...)'> is seen before set< bytes> is seen, then ordering breaks in org.apache.cassandra.serializers.SetSerializer#serializeValues... adding a test to detect this type of bug also found the same issue with LexicalUUIDType and uuid, which can corrupt ordering as well...
+all types are now generated using the type builder
+TIL: tinyint is variable length and not fixed length...
+just found out about org.apache.cassandra.cql3.functions.types.DataType... not sure why we have duplicate logic for types yet, so need to figure out...
+spoke with [~adelapena] and we are going to block vectors from being reachable fr
+
+s2p1
+# Stage 2 #
+## Issues samples ##
+### Issue Bug ###
+Here you can see an Bug issue:
+
+issue_type: Bug 
+
+summary: Reuse of metadata collector can break key count calculation 
+
+description: When flushing a memtable we currently pass a constructed {{MetadataCollector}} to the {{SSTableMultiWriter}} that is used for writing sstables. The latter may decide to split the data into multiple sstables (e.g. for separate disks or driven by compaction strategy) — if it does so, the cardinality estimation component in the reused {{MetadataCollector}} for each individual sstable contains the data for all of them.
+
+As a result, when such sstables are compacted the estimation for the number of keys in the resulting sstables, which is used to determine the size of the bloom filter for the compaction result, is heavily overestimated.
+
+This results in much bigger L1 bloom filters than they should be. One example (which came about during testing of the upcoming CEP-26, after insertion of 100GB data with 10% reads):
+(current)
+{code}
+ 		Bloom filter false positives: 22627369
+ 		Bloom filter false ratio: 0.02257
+ 		Bloom filter space used: 1848247864
+ 		Bloom filter off heap memory  
+
+status: Open 
+
+comments: I don't think this affects any of our current {{SSTableMultiWriter}} implementations right? {{RangeAwareSSTableWriter}} creates a new collector for every new sstable and {{SimpleSSTableMultiWriter}} only creates a single new sstable.
+You are right, this currently isn't a problem here, only something to be aware of and fix / work around when a compaction strategy needs to split the flush output.
+
+I was thinking per-disk splitting on flush can trigger this, but that's handled inside the flushing code rather than in the writer.
+
+s2p2
+# Stage 2 #
+## Issues samples ##
+### Issue Improvement ###
+Here you can see an improvement issue:
+
+issue_type: Improvement 
+
+summary: Include estimated active compaction remaining write size when starting a new compaction 
+
+description: There are a few things we can augment in how we handle compactions locally to improve upon the very simple "keep X Mebibytes free on disk" we currently have:
+ Allow specification of free space available in percent rather than raw size
+ Do this on a per-disk basis based on what's going on with compactions
+ Include an estimate of the disk space of active compactions in flight when we do the above calculation check so we don't blow past our limits due to concurrent runs
+ 
+status: Resolved 
+
+comments: ||Item|Link||
+|PR|[link|https://github.com/apache/cassandra/pull/1888]|
+|JDK8 CI|[link|https://app.circleci.com/pipelines/github/josh-mckenzie/cassandra/309/workflows/52b0f2a9-11f3-4cff-bbc2-2fefeca967b6]|
+|JDK11 CI|[link|https://app.circleci.com/pipelines/github/josh-mckenzie/cassandra/309/workflows/c2f9dc8f-1182-42d5-92e9-1b183ba45fa3]|
+
+Promoted writesData to member on OperationType and fixed unused import in a couple commits; CI should be running (for real) now.
+
+s2p3
+# Stage 2 #
+## Issues samples ##
+### Issue New Feature ###
+Here you can see an New Feature Issue:
+
+issue_type: New Feature 
+
+summary: On-disk string index with index building and on-disk query path 
+
+description: An on-disk index for string (literal) datatypes. This index is used for the following datatypes:
+ * UTF8Type
+ * AsciiType
+ * CompositeType
+ * Frozen types
+
+This includes the ability to write the index to disk at index creation, by specific index rebuild and during SSTable compaction. 
+
+Also the ability to query the on-disk index and combine the results with those from the in-memory indexes created by CASSANDRA-18058. 
+
+status: Resolved 
+
+comments: The PR for this patch is here: https://github.com/maedhroz/cassandra/pull/9
+Minor note: I had forgotten to actually push the trunk rebase for the CASSANDRA-16052 feature branch on the 19th. That's done, so the branch here will need a quick rebase.
+I have rebased the CASSANDRA-18062 against the rebased CASSANDRA-16052 branch.
+[~mfleming] Just to be clear, this is almost certainly not going to land in any 4.x release, and if [~mike_tr_adamson] is okay w/ it, I’d suggest we just use the NA version here and later inherit the main CEP-7 version when that’s finalized in the epic Jira/ticket.
+[~maedhroz] Sure can do. I was just monkeying about with the versions to create a simpler kanban board, but I'm happy to use NA here.
+[~mike_tr_adamson] [~adelapena] I've thrown my +1 on the PR
+
+There are a number of Jiras we've agreed to spin off and handle separately, so modulo getting those created and making sure we're clean on tests (I can rebase if we have things failing because of trunk divergence...let me know), things are looking pretty good here.
+Changes look good to me too, I have only left a few final nits on the PR.
+
+As for testing, there are too many modified files for the automatic CircleCI repeated runs but I can start a few runs repeating the modified tests in batches. It might be preferable to do so after rebase, if we are going to rebase now.
+This is the latest test run on [CircleCI|https://app.circleci.com/pipelines/github/mike-tr-adamson/cassandra/129/workflows/ffae16e7-9b23-42ef-8d6f-f47aafcb6a4b]. The failures seem unrelated to SAI so I don't whether rebase first of merge first. I'm happy with either.
+Just reviewed the last clean-up commit.
+
++1 overall
+
+Let's squash it, fix up the commit message, and merge this thing!
+
+Once it's merged, I'll rebase the 16052 branch, run the tests, and report back.
+I think we should run the repeated tests before merging, so we make sure we don't introduce new flakies.
+
+I have started part of the repeated runs [here|https://app.circleci.com/pipelines/github/adelapena/cassandra?branch=18062-trunk-test]. Each push on that branch is for running a subset of the new or modified tests.
+
+So far it has hit test failures on [{{StorageAttachedIndexDDLTest.concurrentTruncateWithIndexBuilding}}|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/8301fcae-ab73-401d-ae26-d3e7e8b0f237/jobs/38519/tests] and [{{CompactionTest.testConcurrentIndexDropWithCompaction}}|https://app.circleci.com/pipelines/github/adelapena/cassandra/2828/workflows/c22d9dc8-9af1-493f-9e13-e92261fd2386/jobs/38538/tests]. I'll keep running the rest of the tests to see if there are more flakies.
+Even if we do have a couple flakes, they're only merging to the 16052 umbrella branch, where I'd be running the repeats again after the next trunk rebase. If they're trivial to resolve now before merge though, that's fine too.
+These are the new flaky tests once all the CI runs have finished:
+ * [o.a.c.distributed.test.sai.IndexAvailabilityTest#verifyIndexStatusPropagation|https://app.circleci.com/pipelines/github/adelapena/cassandra/2826/workflows/e63df64f-9821-4bae-add4-7b3169c50344/jobs/38621/tests]
+ * [o.a.c.index.sai.cql.DecimalLargeValueTest#runQueriesWithDecimalValueCollision|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/8301fcae-ab73-401d-ae26-d3e7e8b0f237/jobs/38550/tests]
+ * [o.a.c.index.sai.cql.MixedIndexImplementationsTest#shouldRequireAllowFilteringWithOtherIndex|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/06a9ee70-d522-45ab-b5f1-b18eed4818d6/jobs/38664/tests]
+ * [o.a.c.index.sai.cql.StorageAttachedIndexDDLTest#concurrentTruncateWithIndexBuilding|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/8301fcae-ab73-401d-ae26-d3e7e8b0f237/jobs/38519/tests]
+ * [o.a.c.index.sai.cql.StorageAttachedIndexDDLTest#verifyRebuildCorruptedFiles|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workfl
+
+ s2p4
+ # Stage 2 #
+## Instructions ###
+"Architectural impact" in software systems is the effect that design decisions made at the architectural level have on the system's overall quality attributes, such as performance, scalability, maintainability, security, and reliability.
+
+Architectural impact can be both positive and negative. For example, a decision to use a microservices architecture can improve the system's scalability and maintainability, but it can also increase the system's complexity and make it more difficult to debug.
+
+Here are some specific examples of architectural impact:
+
+A decision to use a distributed architecture can improve the system's scalability and performance, but it can also increase the system's complexity and make it more difficult to manage.
+
+A decision to use a layered architecture can improve the system's maintainability and security, but it can also reduce the system's performance.
+
+A decision to use a cloud-based architecture can reduce the cost and complexity of managing the system, but it can also make the system more vulnerable to attack.
+
+s2p5
+# Stage 2 #
+## Architectural impact examples ###
+Here are some other examples of architectural impacts in software systems:
+
+Performance: The choice of programming language, database, and other technologies can have a significant impact on the performance of a software system. For example, a system written in a compiled language such as C++ will generally perform better than a system written in an interpreted language such as Python.
+
+Scalability: The ability of a system to handle increased load is another important quality attribute. Some architectural decisions, such as using a distributed architecture or a cloud-based architecture, can improve the scalability of a system.
+
+Maintainability: The ease with which a system can be modified and extended is also important. Some architectural decisions, such as using a layered architecture or a modular architecture, can improve the maintainability of a system.
+
+Security: The ability of a system to protect itself from attack is another important quality attribute. Some architectural decisions, such as using a layered architecture or a least-privilege approach, can improve the security of a system.
+
+Reliability: The ability of a system to operate correctly over time is also important. Some architectural decisions, such as using fault tolerance and redundancy techniques, can improve the reliability of a system.
+
+s2p6
+# Stage 2 #
+## Instructions ##
+I want a issue classifier that does not have all steps related to machine learning process, i.e, less formal, in this case, we use only contextualization, instruction and examples to analyze the content of issue (summary, description, comments) of issues. 
+
+s2p7
+# Stage 2 #
+## Architectural impact example ##
+Here is an example of issue with Architectural impact:
+
+issue_type: New Feature
+
+summary: On-disk string index with index building and on-disk query path 
+
+description: An on-disk index for string (literal) datatypes. This index is used for the following datatypes:
+ * UTF8Type
+ * AsciiType
+ * CompositeType
+ * Frozen types
+
+This includes the ability to write the index to disk at index creation, by specific index rebuild and during SSTable compaction. 
+
+Also the ability to query the on-disk index and combine the results with those from the in-memory indexes created by CASSANDRA-18058. 
+status: Resolved 
+comments: The PR for this patch is here: https://github.com/maedhroz/cassandra/pull/9
+Minor note: I had forgotten to actually push the trunk rebase for the CASSANDRA-16052 feature branch on the 19th. That's done, so the branch here will need a quick rebase.
+I have rebased the CASSANDRA-18062 against the rebased CASSANDRA-16052 branch.
+[~mfleming] Just to be clear, this is almost certainly not going to land in any 4.x release, and if [~mike_tr_adamson] is okay w/ it, I’d suggest we just use the NA version here and later inherit the main CEP-7 version when that’s finalized in the epic Jira/ticket.
+[~maedhroz] Sure can do. I was just monkeying about with the versions to create a simpler kanban board, but I'm happy to use NA here.
+[~mike_tr_adamson] [~adelapena] I've thrown my +1 on the PR
+
+There are a number of Jiras we've agreed to spin off and handle separately, so modulo getting those created and making sure we're clean on tests (I can rebase if we have things failing because of trunk divergence...let me know), things are looking pretty good here.
+Changes look good to me too, I have only left a few final nits on the PR.
+
+As for testing, there are too many modified files for the automatic CircleCI repeated runs but I can start a few runs repeating the modified tests in batches. It might be preferable to do so after rebase, if we are going to rebase now.
+This is the latest test run on [CircleCI|https://app.circleci.com/pipelines/github/mike-tr-adamson/cassandra/129/workflows/ffae16e7-9b23-42ef-8d6f-f47aafcb6a4b]. The failures seem unrelated to SAI so I don't whether rebase first of merge first. I'm happy with either.
+Just reviewed the last clean-up commit.
+
++1 overall
+
+Let's squash it, fix up the commit message, and merge this thing!
+
+Once it's merged, I'll rebase the 16052 branch, run the tests, and report back.
+I think we should run the repeated tests before merging, so we make sure we don't introduce new flakies.
+
+I have started part of the repeated runs [here|https://app.circleci.com/pipelines/github/adelapena/cassandra?branch=18062-trunk-test]. Each push on that branch is for running a subset of the new or modified tests.
+
+So far it has hit test failures on [{{StorageAttachedIndexDDLTest.concurrentTruncateWithIndexBuilding}}|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/8301fcae-ab73-401d-ae26-d3e7e8b0f237/jobs/38519/tests] and [{{CompactionTest.testConcurrentIndexDropWithCompaction}}|https://app.circleci.com/pipelines/github/adelapena/cassandra/2828/workflows/c22d9dc8-9af1-493f-9e13-e92261fd2386/jobs/38538/tests]. I'll keep running the rest of the tests to see if there are more flakies.
+Even if we do have a couple flakes, they're only merging to the 16052 umbrella branch, where I'd be running the repeats again after the next trunk rebase. If they're trivial to resolve now before merge though, that's fine too.
+These are the new flaky tests once all the CI runs have finished:
+ * [o.a.c.distributed.test.sai.IndexAvailabilityTest#verifyIndexStatusPropagation|https://app.circleci.com/pipelines/github/adelapena/cassandra/2826/workflows/e63df64f-9821-4bae-add4-7b3169c50344/jobs/38621/tests]
+ * [o.a.c.index.sai.cql.DecimalLargeValueTest#runQueriesWithDecimalValueCollision|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/8301fcae-ab73-401d-ae26-d3e7e8b0f237/jobs/38550/tests]
+ * [o.a.c.index.sai.cql.MixedIndexImplementationsTest#shouldRequireAllowFilteringWithOtherIndex|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/06a9ee70-d522-45ab-b5f1-b18eed4818d6/jobs/38664/tests]
+ * [o.a.c.index.sai.cql.StorageAttachedIndexDDLTest#concurrentTruncateWithIndexBuilding|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/workflows/8301fcae-ab73-401d-ae26-d3e7e8b0f237/jobs/38519/tests]
+ * [o.a.c.index.sai.cql.StorageAttachedIndexDDLTest#verifyRebuildCorruptedFiles|https://app.circleci.com/pipelines/github/adelapena/cassandra/2835/work
+
+ s2p8
+ # Stage 2 #
+## Architectural impact example ##
+Here another example of issue with Architectural impact:
+
+issue_type: Improvement
+
+summary: Include estimated active compaction remaining write size when starting a new compaction 
+
+description: There are a few things we can augment in how we handle compactions locally to improve upon the very simple "keep X Mebibytes free on disk" we currently have:
+ # Allow specification of free space available in percent rather than raw size
+ # Do this on a per-disk basis based on what's going on with compactions
+ # Include an estimate of the disk space of active compactions in flight when we do the above calculation check so we don't blow past our limits due to concurrent runs
+
+status: Resolved 
+
+comments: ||Item|Link||
+|PR|[link|https://github.com/apache/cassandra/pull/1888]|
+|JDK8 CI|[link|https://app.circleci.com/pipelines/github/josh-mckenzie/cassandra/309/workflows/52b0f2a9-11f3-4cff-bbc2-2fefeca967b6]|
+|JDK11 CI|[link|https://app.circleci.com/pipelines/github/josh-mckenzie/cassandra/309/workflows/c2f9dc8f-1182-42d5-92e9-1b183ba45fa3]|
+
+Promoted writesData to member on OperationType and fixed unused import in a couple commits; CI should be running (for real) now.
+
+s2p9
+# Stage 2 #
+## Architectural impact example ##
+Here is another issue with Architectural impact:
+
+issue_type: Bug
+
+summary: Reuse of metadata collector can break key count calculation 
+
+description: When flushing a memtable we currently pass a constructed {{MetadataCollector}} to the {{SSTableMultiWriter}} that is used for writing sstables. The latter may decide to split the data into multiple sstables (e.g. for separate disks or driven by compaction strategy) — if it does so, the cardinality estimation component in the reused {{MetadataCollector}} for each individual sstable contains the data for all of them.
+
+As a result, when such sstables are compacted the estimation for the number of keys in the resulting sstables, which is used to determine the size of the bloom filter for the compaction result, is heavily overestimated.
+
+This results in much bigger L1 bloom filters than they should be. One example (which came about during testing of the upcoming CEP-26, after insertion of 100GB data with 10% reads):
+(current)
+{code}
+ 		Bloom filter false positives: 22627369
+ 		Bloom filter false ratio: 0.02257
+ 		Bloom filter space used: 1848247864
+ 		Bloom filter off heap memory  
+
+status: Open 
+
+comments: I don't think this affects any of our current {{SSTableMultiWriter}} implementations right? {{RangeAwareSSTableWriter}} creates a new collector for every new sstable and {{SimpleSSTableMultiWriter}} only creates a single new sstable.
+You are right, this currently isn't a problem here, only something to be aware of and fix / work around when a compaction strategy needs to split the flush output.
+
+I was thinking per-disk splitting on flush can trigger this, but that's handled inside the flushing code rather than in the writer.
+
+s2p10
+# Stage 2 #
+## Architectural impact example ##
+Here is an example of issue that does not have Architectural Impact:
+
+issue_type: Bug
+
+summary: Mixed line endings in the codebase
+
+description: There seems to be a lot of line endings in the codebase that end with DOS line endings. Some files are even mixes of DOS and Unix line endings. This patch removes all the DOS file endings and corrects them to Unix.
+
+Also attached is the program that I used to remove them. 
+
+Using Unix line endings in all places makes lots of things easier. At the very least, a consistent choice of line endings would. Has there been discussion of what should be the correct line ending to use?
+
+status: Resolved 
+
+comments: This is the patch file to remove the DOS line endings from the code. no.rb is a ruby program that I ran to create this patch.
+Oh, and that program is so ugly because I wanted to be sure I was just replacing "\r\n" and not also adding newlines at the ends of files, etc. 
+The vast majority of the files use Windows line endings, which makes sense since the original authors develop on Windows.  It makes more sense to me to standardize on that, even though I develop on Linux.
+As long as we standardized on one or the other, as long as we set the svn:eol-style to native things should resolve themselves, right?  Windows users see Windows line endings and *X users see *X line endings.
+I like the sound of this deep svn voodoo.
+The mixed line-endings drove me nuts when developing on Windows. Cygwin made everything worse. None of the eol settings in git would do the right thing. Standardizing on one set of endings would be cause for great joy!
+I had no idea that existed.  Will it deal with the few files that have mixed line endings?
+I don't think it would handle them properly, although I'm not sure.  You can set individual files to one or the other, or native, but I think you'd have to leave it without an svn:eol-style if you *wanted* to keep it mixed.  It'd be better to convert them first if there's no compelling reason for them to be mixed.
+
+http://svnbook.red-bean.com/en/1.1/ch07s02.html#svn-ch-7-sect-2.3.5 is the relevant section of the subversion book.
+
+The algorithm would be:
+ - find all files we want to have proper eol's
+ - convert them all to your native system's eol's
+ - for each filename in files:
+ - - svn propset svn:eol-style native filename
+ - commit all files
+
+The above is obviously most easily done with a script.
+
+To keep things nice going forward after this is done, if each committer added the following section to their .subversion/config then new files would automatically have the correct eol style set:
+[auto-props]
+*.java = svn:eol-style=native
+*.properties = svn:eol-style=native
+*.py= svn:eol-style=native
+*.sh = svn:eol-style=native;svn:executable
+*.thrift = svn:eol-style=native
+*.txt = svn:eol-style=native
+*.xml = svn:eol-style=native
+I doubt the svn-magic will play well with Git.
+
+Can we switch to Unix endings and be done with it?
+The svn-magic plays just fine with Git, git-svn knows about eol-style.  Even so, people not using git-svn and just using git directly would ignore the settings.
+
+Re: Unix endings, yeah, I was suggesting moving to Unix endings.  Settings those styles allows editors and platforms without appropriate eol handling to treat them natively though.
+Unix line ending conversion done from code in r797209.
+
+Using this code:
+
+{code}
+find . -name "*.java" -print0 -o -name "*.sh" -print0 -o -name "*.xml" -print0 -o -name "*.txt" -print0 | xargs -0 dos2unix
+{code}
+I don't see anyone that prefers \r\n trying to make this consistent or making noise about wanting consistency. I say the Unix hackers win this one.
+Corrected unix line endings patch. Last one was an aborted one that someone was renamed. Apologies.
+Since we're seeing more and more mixing of line endings (like in r798935), here is another patch moving cassandra to unix line endings. Patch is against r799140.
+with a trunk cassandra-crlf and a patched cassandra-crlf2 this returns no result:
+diff -r -w cassandra-crlf cassandra-crlf2
+
++1 for applying this immediately.  There are no enormous patches in the queue and this doesn't mess with any Windows-specific files.
+
+I still think we should be applying the svn properties and configuration I discuss above, but getting all the files into the correct format is the most important step.
+Committed.
+
+ 190 files changed, 30157 insertions(+), 30157 deletions(-)
+Integrated in Cassandra #153 (See [http://hudson.zones.apache.org/hudson/job/Cassandra/153/])
+    run source files through dos2unix to standardize on \n line endings.  patch by Jeff Hodges; reviewed by Michael Greene for 
+
+Integrated in Cassandra #158
+
+s2p11
+# Stage 2 #
+## Architectural impact example ##
+Here is another example of issue that does not have Architectural Impact
+
+issue_type: New Feature
+
+summary: Allow selecting Map values and Set elements 
+
+description: Allow "SELECT map['key]" and "SELECT set['key']." 
+
+status: Resolved 
+
+comments: What should we do for "does element X exist in set Y" syntax?
+Is this something for CASSANDRA-7395 ?
+Want to say: wouldn't it be easier to add some "C*-UDF-stdlib" and implement it there?
+The drawback: it would look like {{select stdlib:mapGet( map, 'key' ),  stdlib:listGet( list, 42 ),  stdlib:setContains( set, 'value' )  ...}}
+Or add some "operator" functionality to UDF : {{+ - / * !  [x]}}
+It's definitively worth having proper syntactic sugar here imo and that's really mainly what this issue is about. We can indeed make this sugar generate a function call behind the scene but we don't need CASSANDRA-7395 per-se to add such function.
+
+Also, ultimately we can and should make those operator be "efficient" (at least for map and sets, for lists there is no much we can do) by not querying the whole CQL row if we don't need to (which amount to extending what CASSANDRA-7085 will introduce) so we'll almost surely end up with having those operation being special cased anyway, not just simple function calls.
+It seems to me a natural extension would be extending this to slicing capabilities
+
+map[key1..key2] 
+
+or whatever syntax was appropriate.
+bq. It's definitively worth having proper syntactic sugar here
+
+agree
+
+UDFs are not a requirement for this one - but may help to quickly add new functionality with the option to optimize that later (using CASSANDRA-7085, optimized slice queries etc)
+
+bq. slicing capabilities map[key1..key2] 
+
+
+maybe also to check which keys are present for a slice (or at all) and return these keys
+
+and some "containsKey(key1..key2)" (return a boolean or an int with the count of the existing keys)
+Proposal ("map" used for map columns, "set" for set columns, "list" for list columns) :
+* {{map\[key]}} to return single map value or {{null}}
+* {{map?\[key]}} tests whether single map key exists ({{true}} or {{false}})
+* {{map\[key1..key2]}} to return sliced map
+* {{map?\[key1..key2]}} to return set with keys that are present in the map
+* {{map\[..key2]}} to return sliced map
+* {{map?\[..key2]}} to return set with keys that are present in the map
+* {{map\[key1..]}} to return sliced map
+* {{map?\[key1..]}} to return set with keys that are present in the map
+* {{set\[key]}} returns {{true}} or {{false}} whether a single element exists
+* {{set\[key1..key2]}} to return sliced set (check values of multiple elements)
+* {{set\[key1..]}} to return sliced set (check values of multiple elements)
+* {{set\[..key2]}} to return sliced set (check values of multiple elements)
+* {{list\[idx]}} to return single list element
+* {{list?\[idx]}} tests whether single list element exists ({{true}} or {{false}})
+* {{list\[idx1..idx2]}} to return sliced list - list has length {{idx2-idx1+1}}
+* {{list?\[idx1..idx2]}} to return sliced list with {{true}} or {{false}} indicating whether an element exists (is no tnull)
+* {{sizeof(map)}}, {{sizeof(set)}}, {{sizeof(list)}} to return size of map/set/list
+
+Restriction for {{key1..key2}} : {{key1}} must be less than {{key2}}
+
+Using these collection operations on parts of primary key columns would require special handling.
+Primary key columns are stored in their serialized byte representation - so it would need deserialzation, handling, 2nd serialization.
+
+All would be added to {{unaliasedSelector}} in {{Cql.g}}.
+Other thoughts?
+
+I've built a POC for slicing (except {{sizeof}} functions) availabile at github at https://github.com/snazy/cassandra/tree/7396-coll-slice to illustrate functionality. 
+
+That POC does not use column slicing to read only the requested values. In fact I do not know how to read only a map key „foobar“ from a table with clustering keys. AFAIK will the "internal column name“ something like "clusteringKey:mapColumnName:mapColumnKey“. Such a read optimization could be done for tables that not not have a clustering key.
+
+But there’s room for optimization to prevent unnecessary internal serialization-deserialization-serialization sequences for the above collection operations by using only  
+
+s4p1
+# Stage 4 #
+# Instruction #
+Now,  in the Stage 4 (Issue classifier) is responsable to analyze each issue using the summary, description and comments of issue to check if there is "Architectural impact" or does not have "Architectural Impact" in the software. Also, it is necessary to justify the answer based on content of issue about architectural impact. You can also add a label Archictural Impact:Yes if the issues has architectural impact or label Architectural Impact:No. After the justification of Architectural Impact.
