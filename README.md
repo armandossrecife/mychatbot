@@ -1,6 +1,8 @@
 # My Chatbot integrated to Google Gemini
 
-Criação de um modelo automático (baseado no [Google Gemini](https://gemini.google.com)) para fazer inspeção de issues de projetos da Apache foundation para classificar se o issue possue impacto arquitetural ou não.
+Criação de um modelo automático (baseado no [Google Gemini](https://gemini.google.com)) para fazer inspeção de issues de projetos da [Apache foundation](https://www.apache.org/) para classificar se o issue possue impacto arquitetural ou não.
+
+[Requisitos básicos da implementação](https://github.com/armandossrecife/mychatbot/blob/main/inspection.md)
 
 - **chatbot.py**: conceitos básicos para fazer integração com o Gemini
 - **myinspection.py**: implementa o processo automático basedo nos passos descrito em https://github.com/Technical-Debt-Large-Scale/my_validation/blob/main/inspection_process.md
