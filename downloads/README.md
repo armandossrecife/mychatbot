@@ -1,0 +1,1 @@
+Pasta que guarda os downloads da aplicação

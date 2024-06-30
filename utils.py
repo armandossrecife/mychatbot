@@ -1,4 +1,6 @@
 import csv
+import requests
+import zipfile
 
 ### Reads a CSV file containing issues and labels (separated by semicolons ;).
 ### Generates Few-Shot prompts for Gemini based on the data.
@@ -58,3 +60,44 @@ def generate_chain_of_thought_prompt(summary, description, comments):
   * Explanation: Explain your reasoning for the answer.
   """
   return prompt
+
+# Dada uma url e um local de arquivo (destination) faz o download do conteudo da url no arquivo
+def download_file(url, destination):
+    try:
+        response = requests.get(url) # Faz a requisicao do arquivo 
+        response.raise_for_status()  # Verifica se houve algum erro na requisição
+        conteudo = response.content  # Guarda o conteudo binario da resposta da requisicao
+        # Coloca o conteudo da requisicao em um arquivo local 
+        # Cria um novo arquivo e insere o conteudo neste arquivo
+        with open(destination, mode='wb') as file:
+            file.write(conteudo)
+    except requests.exceptions.MissingSchema:
+        # Caso seja uma excecao de url invalida
+        print("URL inválida. Certifique-se de fornecer uma URL válida.")
+        print("Download cancelado!")
+        raise ValueError("URL inválida. Certifique-se de fornecer uma URL válida.")
+    except requests.exceptions.ConnectionError:
+        # Caso seja uma excecao de comunicacao de rede
+        print(f"Erro na conexão!")
+        print("Download cancelado!")
+        raise ValueError("Erro na conexão!")
+    except IOError: 
+        # Caso aconteca um erro de IO do arquivo
+        print(f"Arquivo {destination} inválido!")
+        print("Download cancelado!")
+        raise ValueError(f"Arquivo {destination} inválido!")
+
+def unzip_file(my_file, path_to_unzip=None):
+    try: 
+        with zipfile.ZipFile(my_file, 'r') as zip_ref:
+            zip_ref.extractall(path_to_unzip)
+    except Exception as ex:
+        raise ValueError(f"Erro ao descompactar: {str(ex)}")
+
+def get_field_content(field_name, file_content):
+    try:
+        my_field = file_content.split(f"{field_name}:")[1]
+        my_field = my_field.split('\n')[0]
+        return my_field
+    except Exception: 
+        raise ValueError(f"{field_name} não existe")
