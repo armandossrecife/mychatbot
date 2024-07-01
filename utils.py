@@ -25,7 +25,7 @@ def create_few_shot_prompts(csv_file, label_column="label", output_file="prompts
       label = row[label_column]
 
       # Construct the Few-Shot prompt
-      prompt = f"**Issue:**\n* Summary: {summary}\n* Description: {description}\n* Other Details: {other_details}\n\n**Label:** {label}\n\n"
+      prompt = f"**Issue:**\n* Summary: {summary}\n* Description: {description}\n* Other Details: {other_details}\n**Label:** {label}\n\n"
       outfile.write(prompt)
 
 ### Takes an issue's summary, description, and comments as input.
