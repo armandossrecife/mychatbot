@@ -1,6 +1,7 @@
 import csv
 import requests
 import zipfile
+import json
 
 ### Reads a CSV file containing issues and labels (separated by semicolons ;).
 ### Generates Few-Shot prompts for Gemini based on the data.
@@ -26,6 +27,23 @@ def create_few_shot_prompts(csv_file, label_column="label", output_file="prompts
 
       # Construct the Few-Shot prompt
       prompt = f"**Issue:**\n* Summary: {summary}\n* Description: {description}\n* Other Details: {other_details}\n**Label:** {label}\n\n"
+      outfile.write(prompt)
+
+### Reads a CSV file containing issues and labels (separated by semicolons ;).
+### Generates Few-Shot prompts for Gemini based on the data.
+### Saves the generated prompts to a text file.
+def create_few_shot_prompt_real_data(json_file, output_file="prompts.txt"):
+  with open(json_file, 'r') as infile, open(output_file, 'w') as outfile:
+    # Load the list of dictionaries from the file
+    issues_groud_truth = json.load(infile)
+    for row in issues_groud_truth:
+      issue_id = row["issue_key"]
+      summary = row["summary"]
+      description = row["description"]
+      label = row["architectural_impact_manual"]
+
+      # Construct the Few-Shot prompt
+      prompt = f"**Issue: {issue_id}**\n* Summary: {summary}\n* Description: {description}\n **Label:** {label}\n\n"
       outfile.write(prompt)
 
 ### Takes an issue's summary, description, and comments as input.
