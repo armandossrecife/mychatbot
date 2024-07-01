@@ -1,5 +1,7 @@
 import utils
 import automated_inspection
+import json
+import issues
         
 def perform_create_few_shot_prompts(manual_inspecion="issues.csv"):
     try: 
@@ -8,29 +10,26 @@ def perform_create_few_shot_prompts(manual_inspecion="issues.csv"):
         print(f"Erro: {str(ex)}")
         raise ValueError(ex)
 
-def perform_automated_inspection(critical_issues):
+def perform_automated_inspection(filename="issues_to_inspection.json"):
     try: 
+        # Open the JSON file for reading in read mode ('r')
+        with open(filename, "r") as infile:
+          # Load the list of dictionaries from the file
+          critical_issues = json.load(infile)
         for issue in critical_issues:
-            inspection_result = automated_inspection.perform_gemini_inspection(issue, "prompts.txt")
-            print(f"Issue Summary: {inspection_result['summary']}")
-            print(f"Gemini Answer (Architectural Issue): {inspection_result['gemini_answer'].upper()}")
-            print(f"Explanation: {inspection_result['gemini_explanation']}")
+            try: 
+              inspection_result = automated_inspection.perform_gemini_inspection(issue, "prompts.txt")
+            except Exception as ex: 
+              print(f"Erro no issue {inspection_result['summary']}: {str(ex)}")
+            if inspection_result['summary']: 
+              print(f"Issue Summary: {inspection_result['summary']}")
+            if inspection_result['gemini_answer']: 
+              print(f"Gemini Answer (Architectural Issue): {inspection_result['gemini_answer'].upper()}")
+            if inspection_result['gemini_explanation']:
+              print(f"Explanation: {inspection_result['gemini_explanation']}")
             print("-"*50)
     except Exception as ex:
         print(f"Erro durante a inspeção automática dos issues: {str(ex)}")
-
-critical_issues = [
-  {
-    "summary": "Memory leak in core service",
-    "description": "The service responsible for handling user requests seems to be experiencing a memory leak. Memory usage keeps increasing over time, eventually leading to crashes and service disruptions.",
-    "comments": "[User C] This issue has caused several outages in the past week. High priority to fix."
-  },
-  {
-    "summary": "Database schema not optimized for frequent writes",
-    "description": "The current database schema involves complex joins and aggregations, leading to slow performance when writing large amounts of data. This is causing bottlenecks in our data ingestion pipeline.",
-    "comments": "[Tech Lead] We need to investigate database optimization techniques to improve write performance."
-  }
-]
 
 try: 
     print("Creating the few shot prompts based on issues.csv")    
@@ -38,8 +37,9 @@ try:
     # Contem os resultados da inspecao manual (Yes ou No para cada issue)
     perform_create_few_shot_prompts(manual_inspecion="issues.csv")
     print("Few-Shot prompts generated and saved to prompts.txt")
-
+    issues.generate_selected_issues(issues.filename)
+    issues.convert_issues_to_json(issues.filename, path_arquivos_descompactados=issues.PATH_ARQUIVOS_DESCOMPACTADOS)
     print("Fazendo a inspeção automática dos issues selecionados...")
-    perform_automated_inspection(critical_issues)
+    perform_automated_inspection()
 except Exception as ex:
     print(f"Erro: {str(ex)}")

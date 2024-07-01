@@ -100,4 +100,22 @@ def get_field_content(field_name, file_content):
         my_field = my_field.split('\n')[0]
         return my_field
     except Exception: 
-        raise ValueError(f"{field_name} não existe")
+        print(f"{field_name} não existe")
+
+def convert_comment_to_text(comments_string):
+  try: 
+    comments_string = comments_string.split(": ")[-1]  # Assuming the colon and space separate the key-value pair
+    comments_list = comments_string.split(",")
+    comments = ""
+    for comment in comments_list:
+        comment = comment.replace("['", "")
+        comment = comment.replace("']", "")
+        comment = comment.replace(", '", " ")
+        comment = comment.replace("'", "")
+        comment = comment.replace("\\n", "\n")    
+        comment = comment.replace("\\r", "\r")
+        comments = comments + comment
+    return comments
+  except Exception as ex:
+    print(f"Erro ao converter comment para texto: {str(ex)}")
+    return None

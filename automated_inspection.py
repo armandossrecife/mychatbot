@@ -34,8 +34,12 @@ def perform_gemini_inspection(issue_data, few_shot_prompts, model_name="gemini-1
 
   # Generate Chain-of-Thought prompt
   # Cria o prompt para cada issue fornecido
-  prompt = utils.generate_chain_of_thought_prompt(issue_data["summary"], issue_data["description"], issue_data["comments"])
+  try: 
+    prompt = utils.generate_chain_of_thought_prompt(issue_data["summary"], issue_data["description"], issue_data["comments"])
+  except Exception as ex: 
+    print(f"Erro no generate_chain_of_thought_prompt: {str(ex)}")
 
+  # TODO: tratar as seguintes exceptions: RequestError, InternalServerError, TimeoutError, ConnectionError
   print('Send prompt to Gemini and get response...')
   # TODO: garantir que o modelo vai analisar o issue e inferir Yes ou No para architecture issue
   # Send prompt to Gemini and get response
@@ -54,11 +58,17 @@ def perform_gemini_inspection(issue_data, few_shot_prompts, model_name="gemini-1
     meu_texto = meu_texto + item
   
   if meu_texto.startswith("**Answer:**") or meu_texto.startswith("* Answer:"):
-    answer = meu_texto.split("**Answer:**")[1]
-    answer = answer.split('\n')[0]
-    explanation = meu_texto.split("**Explanation:**\n")[1]
-    if explanation is None: 
-        explanation = meu_texto.split("* Explanation:")[1]
+    if len(meu_texto.split("**Answer:**")) > 0: 
+      answer = meu_texto.split("**Answer:**")[1]
+      if answer: 
+        answer = answer.split('\n')[0]
+      else:
+        answer = None
+    if len(meu_texto.split("**Explanation:**\n")) > 0:
+      explanation = meu_texto.split("**Explanation:**\n")[1]
+      if explanation is None: 
+        if len(meu_texto.split("* Explanation:")) > 0:
+          explanation = meu_texto.split("* Explanation:")[1]
     
   # Combine results with issue data
   return {
