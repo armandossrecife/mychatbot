@@ -43,4 +43,4 @@ https://mermaid.js.org/syntax/gitgraph.html
 
 O diagrama resultante é: 
 
-![Esquema de branches!](https://raw.githubusercontent.com/armandossrecife/mychatbot/main/esquema_branches.png) "Branches: main, desenvolvimento, dev1, dev2 e dev3"
+![Esquema de branches!](https://raw.githubusercontent.com/armandossrecife/mychatbot/main/esquema_branches.png) "Branches: main, desenvolvimento, issue_1, issue_2, issue_3 e issue_N"
