@@ -68,38 +68,3 @@ def perform_gemini_inspection(issue_data, few_shot_prompts, model_name="gemini-1
       "gemini_answer": answer,
       "gemini_explanation": explanation
   }
-
-# Example usage (replace with actual data)
-summary = "Difficulty mocking external dependencies in unit tests."
-description = "The current code structure makes it challenging to mock external dependencies for unit testing, leading to slow and unreliable tests."
-comments = "[User A] This is a major bottleneck for our development process."
-
-chain_of_thought_prompt = utils.generate_chain_of_thought_prompt(summary, description, comments)
-
-print("--- chain_of_thought_prompt ---")
-#print(chain_of_thought_prompt)
-
-# Example usage (replace "issues.csv" with your actual file path)
-# Contem os resultados da inspecao manual (Yes ou No para cada issue)
-utils.create_few_shot_prompts("issues.csv")
-print("Few-Shot prompts generated and saved to prompts.txt")
-
-critical_issues = [
-  {
-    "summary": "Memory leak in core service",
-    "description": "The service responsible for handling user requests seems to be experiencing a memory leak. Memory usage keeps increasing over time, eventually leading to crashes and service disruptions.",
-    "comments": "[User C] This issue has caused several outages in the past week. High priority to fix."
-  },
-  {
-    "summary": "Database schema not optimized for frequent writes",
-    "description": "The current database schema involves complex joins and aggregations, leading to slow performance when writing large amounts of data. This is causing bottlenecks in our data ingestion pipeline.",
-    "comments": "[Tech Lead] We need to investigate database optimization techniques to improve write performance."
-  }
-]
-
-for issue in critical_issues:
-  inspection_result = perform_gemini_inspection(issue, "prompts.txt")
-  print(f"Issue Summary: {inspection_result['summary']}")
-  print(f"Gemini Answer (Architectural Issue): {inspection_result['gemini_answer'].upper()}")
-  print(f"Explanation: {inspection_result['gemini_explanation']}")
-  print("-"*50)
