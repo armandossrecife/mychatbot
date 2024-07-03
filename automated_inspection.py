@@ -48,7 +48,7 @@ def perform_gemini_inspection(issue_data, few_shot_prompts, model_name="gemini-1
   answer = None
   explanation = None
   print("#"*50)
-  print(f'Resultado da analise do issue {issue_data["summary"]}')
+  print(f'Resultado da analise do issue {issue_data["issue_id"]}')
   for chunk in response:
     text = chunk.text.strip()
     conteudo_response.append(text)
