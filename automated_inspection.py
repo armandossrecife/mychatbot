@@ -72,6 +72,7 @@ def perform_gemini_inspection(issue_data, few_shot_prompts, model_name="gemini-1
     
   # Combine results with issue data
   return {
+      "issue_id": issue_data["issue_id"],
       "summary": issue_data["summary"],
       "description": issue_data["description"],
       "comments": issue_data["comments"],

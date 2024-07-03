@@ -27,15 +27,15 @@ def perform_automated_inspection(filename="issues_to_inspection.json"):
         for issue in critical_issues:
             try: 
               inspection_result = automated_inspection.perform_gemini_inspection(issue, "prompts.txt")
+              if inspection_result['summary']: 
+                print(f"Issue Summary: {inspection_result['summary']}")
+              if inspection_result['gemini_answer']: 
+                print(f"Gemini Answer (Architectural Issue): {inspection_result['gemini_answer'].upper()}")
+              if inspection_result['gemini_explanation']:
+                print(f"Explanation: {inspection_result['gemini_explanation']}")
+              print("-"*50)
             except Exception as ex: 
-              print(f"Erro no issue {inspection_result['summary']}: {str(ex)}")
-            if inspection_result['summary']: 
-              print(f"Issue Summary: {inspection_result['summary']}")
-            if inspection_result['gemini_answer']: 
-              print(f"Gemini Answer (Architectural Issue): {inspection_result['gemini_answer'].upper()}")
-            if inspection_result['gemini_explanation']:
-              print(f"Explanation: {inspection_result['gemini_explanation']}")
-            print("-"*50)
+              print(f"Erro na inspeção do issue {inspection_result['issue_id']}: {str(ex)}")
     except Exception as ex:
         print(f"Erro durante a inspeção automática dos issues: {str(ex)}")
 
